@@ -1,0 +1,12 @@
+[package]
+name = "not_in_the_bible"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex = "1.5.4"
+lazy_static = "1.4.0"
+rustop = "1.1.2"
+unidecode = "0.3.0"
