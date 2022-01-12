@@ -28,8 +28,7 @@ fn main() {
         None => Box::new(io::stdin()) as Box<dyn Read>,
     };
     let dic = InMemoryDictionary::from_input(&mut file);
-    let words: Vec<&String> = args.words.iter().map(|w| w).collect();
-    let absent = dic.absent_words(&words);
+    let absent = dic.absent_words(&args.words);
     for word in absent {
         println!("{}", word);
     }
