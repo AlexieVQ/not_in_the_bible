@@ -17,3 +17,10 @@ pub struct Tweet {
 pub struct User {
     pub screen_name: String,
 }
+
+/// A Twitter draft
+#[derive(Serialize)]
+pub struct Draft {
+    pub status: String,
+    pub in_reply_to_status_id: String,
+}

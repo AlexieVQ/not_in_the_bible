@@ -11,6 +11,7 @@ mod tokenize;
 mod request;
 mod tweet;
 mod request_queue;
+mod response;
 
 fn main() {
     let (args, _) = opts! {
