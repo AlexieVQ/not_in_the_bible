@@ -12,6 +12,8 @@ mod request;
 mod tweet;
 mod request_queue;
 mod response;
+mod searcher;
+mod response_queue;
 
 fn main() {
     let (args, _) = opts! {
