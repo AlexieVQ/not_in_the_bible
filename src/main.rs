@@ -5,10 +5,12 @@ use rustop::opts;
 
 use crate::in_memory_dictionary::InMemoryDictionary;
 
-pub mod in_memory_dictionary;
-
-pub mod dictionary;
-pub mod tokenize;
+mod in_memory_dictionary;
+mod dictionary;
+mod tokenize;
+mod request;
+mod tweet;
+mod request_queue;
 
 fn main() {
     let (args, _) = opts! {
