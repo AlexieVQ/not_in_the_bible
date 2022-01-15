@@ -8,7 +8,13 @@ fn run(request_queue: &mut RequestQueue,
         let request = request_queue.take();
         let words = request.words();
         let absent_words = dictionary.absent_words(words);
-        let message: String = if absent_words.is_empty() {
+        let message: String = if words.len() == 1 {
+            if absent_words.is_empty() {
+                "This word is in the Bible"
+            } else {
+                "This word is not in the Bible"
+            }
+        } else if absent_words.is_empty() {
             "All these words are in the Bible"
         } else if absent_words.len() == words.len() {
             "None of these words are in the Bible"
