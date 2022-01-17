@@ -23,6 +23,6 @@ fn run(request_queue: &mut RequestQueue,
         } else {
             format!("“{}” are not in the Bible", absent_words.join("”, “"))
         };
-        response_queue.submit(Response::new(request, message));
+        response_queue.submit(Response::new(&request, message));
     }
 }

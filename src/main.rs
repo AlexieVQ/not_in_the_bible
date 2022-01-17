@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate diesel;
+
 use std::{io::{self, Read}, fs::File};
 
 use dictionary::Dictionary;
@@ -14,6 +17,8 @@ mod request_queue;
 mod response;
 mod searcher;
 mod response_queue;
+mod db_request_queue;
+mod schema;
 
 fn main() {
     let (args, _) = opts! {
