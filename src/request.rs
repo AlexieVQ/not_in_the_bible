@@ -13,21 +13,26 @@ pub struct Request {
     op_id: String,
     op_author: String,
     op_text: String,
+    text: String,
 }
 
 impl Request {
 
     /// Creates a request from given tweets.
     pub fn from_tweets(request: &Tweet, op: &Tweet) -> Request {
+        lazy_static! {
+            static ref RE: Regex = Regex::new(r"@\w+").unwrap();
+        }
         Request {
-            user: request.user.screen_name,
-            request_id: request.id_str,
+            user: request.user.screen_name.to_string(),
+            request_id: request.id_str.to_string(),
             date: DateTime::parse_from_str(&request.created_at,
                 "%a %b %d %T %z %Y").unwrap(),
-            request_text: request.text,
-            op_id: op.id_str,
-            op_author: op.user.screen_name,
-            op_text: op.text,
+            request_text: request.text.to_string(),
+            op_id: op.id_str.to_string(),
+            op_author: op.user.screen_name.to_string(),
+            op_text: op.text.to_string(),
+            text: RE.replace_all(&op.text, "").to_string()
         }
     }
 
@@ -67,13 +72,8 @@ impl Request {
     }
 
     /// Returns words to analyze.
-    pub fn words(&self) -> Vec<String> {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"@\w+").unwrap();
-        }
-        let text: Box<dyn Tokenize> = Box::new(RE
-                .replace_all(&self.op_text, "").to_string());
-        text.tokenize()
+    pub fn words(&self) -> Vec<&str> {
+        self.text.tokenize()
     }
 
 }

@@ -33,7 +33,11 @@ fn main() {
         None => Box::new(io::stdin()) as Box<dyn Read>,
     };
     let dic = InMemoryDictionary::from_input(&mut file);
-    let absent = dic.absent_words(&args.words);
+    let absent = dic.absent_words(&args
+            .words
+            .iter()
+            .map(|w| w.as_ref())
+            .collect::<Vec<&str>>());
     for word in absent {
         println!("{}", word);
     }

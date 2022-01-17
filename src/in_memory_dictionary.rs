@@ -44,7 +44,7 @@ impl InMemoryDictionary {
 }
 
 impl Dictionary for InMemoryDictionary {
-    fn contains(&self, word: &String) -> bool {
+    fn contains(&self, word: &str) -> bool {
         let word = unidecode(&word.to_lowercase());
         self.words.contains(&word)
     }
