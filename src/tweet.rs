@@ -1,3 +1,5 @@
+use serde::Deserialize;
+
 /// A Twitter status
 #[derive(Deserialize)]
 pub struct Tweet {

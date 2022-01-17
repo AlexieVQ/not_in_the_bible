@@ -1,5 +1,6 @@
 use chrono::{DateTime, FixedOffset};
 use lazy_static::lazy_static;
+use regex::Regex;
 
 use crate::{tweet::Tweet, tokenize::Tokenize};
 
@@ -21,7 +22,8 @@ impl Request {
         Request {
             user: request.user.screen_name,
             request_id: request.id_str,
-            date: parse_from_str(request.created_at),
+            date: DateTime::parse_from_str(&request.created_at,
+                "%a %b %d %T %z %Y").unwrap(),
             request_text: request.text,
             op_id: op.id_str,
             op_author: op.user.screen_name,
@@ -69,7 +71,8 @@ impl Request {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"@\w+").unwrap();
         }
-        let text = RE.replace_all(self.op_text, "");
+        let text: Box<dyn Tokenize> = Box::new(RE
+                .replace_all(&self.op_text, "").to_string());
         text.tokenize()
     }
 

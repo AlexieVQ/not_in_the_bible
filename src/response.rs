@@ -9,17 +9,17 @@ pub struct Response {
 impl Response {
 
     /// Creates a new Response for given response with given body.
-    fn new(request: Request, body: String) -> Response{
+    pub fn new(request: Request, body: String) -> Response{
         Response { request, body }
     }
 
     /// The Request to which this response answers.
-    fn response(&self) -> &Request {
+    pub fn response(&self) -> &Request {
         &self.request
     }
 
     /// The response's body (without usernames).
-    fn body(&self) -> &String {
+    pub fn body(&self) -> &String {
         &self.body
     }
 
