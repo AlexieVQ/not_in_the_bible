@@ -11,11 +11,11 @@ use diesel::{
 use dotenv::dotenv;
 use lazy_static::lazy_static;
 
-use crate::{request_queue::RequestQueue, request::Request, schema::requests};
+use crate::{request::Request, schema::requests, job_queue::JobQueue};
 
 const SLEEP_DURATION_SEC: u64 = 60;
 
-/// A RequestQueue stored in a PostgreSQL database.
+/// A JobQueue storing Requests in a PostgreSQL database.
 pub struct DBRequestQueue {
     connection: PgConnection,
 }
@@ -34,7 +34,7 @@ impl DBRequestQueue {
 
 }
 
-impl RequestQueue for DBRequestQueue {
+impl JobQueue<Request> for DBRequestQueue {
 
     /// Adds a request to this queue.
     fn submit(&mut self, request: Request) {
@@ -53,13 +53,20 @@ impl RequestQueue for DBRequestQueue {
         loop {
             match requests::dsl::requests
                             .order_by(requests::date.asc())
-                            .first(&self.connection) {
-                Ok(request) => break request,
+                            .first::<Request>(&self.connection) {
+                Ok(request) => {
+                    diesel::delete(
+                        requests::dsl::requests.filter(
+                            requests::id.eq(&request.id)))
+                            .execute(&self.connection)
+                            .expect("Error while deleting request from queue");
+                    break request;
+                },
                 Err(NotFound) => {
                     sleep(*SLEEP_DURATION);
                 },
                 Err(error) => {
-                    panic!("Error while querying requests: {}", error)
+                    panic!("Error while querying requests: {}", error);
                 }
             }
         }

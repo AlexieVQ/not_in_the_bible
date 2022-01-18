@@ -13,10 +13,9 @@ mod dictionary;
 mod tokenize;
 mod request;
 mod tweet;
-mod request_queue;
+mod job_queue;
 mod response;
 mod searcher;
-mod response_queue;
 mod db_request_queue;
 mod schema;
 

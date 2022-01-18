@@ -1,8 +1,13 @@
-use crate::{request_queue::RequestQueue, response_queue::ResponseQueue, dictionary::Dictionary, response::Response};
+use crate::{
+    dictionary::Dictionary,
+    response::Response,
+    job_queue::JobQueue,
+    request::Request
+};
 
 /// A routine that wait for requests and send responses to them.
-fn run(request_queue: &mut RequestQueue,
-       response_queue: &mut ResponseQueue,
+fn run(request_queue: &mut impl JobQueue<Request>,
+       response_queue: &mut impl JobQueue<Response>,
        dictionary: &impl Dictionary) {
     loop {
         let request = request_queue.take();
