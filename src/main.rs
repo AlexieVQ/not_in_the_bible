@@ -19,6 +19,7 @@ mod searcher;
 mod db_request_queue;
 mod schema;
 mod db_response_queue;
+mod history;
 
 fn main() {
     let (args, _) = opts! {
