@@ -20,6 +20,7 @@ mod db_request_queue;
 mod schema;
 mod db_response_queue;
 mod history;
+mod twitter;
 
 fn main() {
     let (args, _) = opts! {
