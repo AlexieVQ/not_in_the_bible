@@ -6,7 +6,7 @@ use diesel::{
     RunQueryDsl,
     QueryDsl,
     ExpressionMethods,
-    result::Error::NotFound
+    result::{Error::{NotFound, self}, DatabaseErrorKind}
 };
 use dotenv::dotenv;
 use lazy_static::lazy_static;
@@ -38,10 +38,16 @@ impl JobQueue<Request> for DBRequestQueue {
 
     /// Adds a request to this queue.
     fn submit(&mut self, request: Request) {
-        diesel::insert_into(requests::table)
-            .values(&request)
-            .get_result::<Request>(&self.connection)
-            .expect("Error submitting request");
+        match diesel::insert_into(requests::table)
+                    .values(&request)
+                    .get_result::<Request>(&self.connection) {
+            Ok(_) => {},
+            Err(Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) =>
+                        {},
+            Err(error) => {
+                panic!("Error submitting request to database: {}", error);
+            }
+        }
     }
 
     /// Takes a request from this queue (blocking).
