@@ -16,3 +16,6 @@ serde = { version = "1.0", features = ["derive"] }
 diesel = { version = "1.4", features = ["postgres", "chrono"] }
 dotenv = "0.15.0"
 yaml-rust = "0.4"
+oauth-client = "0.6"
+serde_qs = "0.8"
+serde_json = "1.0"
