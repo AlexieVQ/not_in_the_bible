@@ -12,7 +12,6 @@ mod in_memory_dictionary;
 mod dictionary;
 mod tokenize;
 mod request;
-mod tweet;
 mod job_queue;
 mod response;
 mod searcher;

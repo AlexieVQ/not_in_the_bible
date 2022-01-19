@@ -3,7 +3,7 @@ use diesel::{Queryable, Insertable};
 use lazy_static::lazy_static;
 use regex::Regex;
 
-use crate::{tweet::Tweet, tokenize::Tokenize};
+use crate::{twitter::tweet::Tweet, tokenize::Tokenize};
 use crate::schema::requests;
 
 /// A request from a status.
