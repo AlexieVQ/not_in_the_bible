@@ -26,7 +26,7 @@ const TWITTER_API_STATUSES_UPDATE_URL: &str =
 
 /// A connection to a Twitter account.
 pub struct Connection<'a> {
-    pub conf: &'a TwitterConf,
+    pub conf: TwitterConf,
     consumer: Token<'a>,
     token: Token<'a>,
 }
@@ -51,11 +51,12 @@ struct AccessTokenResponse {
 impl <'a> Connection<'a> {
 
     /// Creates a new connection to a Twitter account.
-    pub fn init(conf: &'a TwitterConf) -> Connection<'a> {
+    pub fn init(conf: TwitterConf) -> Connection<'a> {
         let client = Client::builder()
             .build()
             .expect("Error building HTTP client");
-        let consumer = Token::new(&conf.api_key, &conf.api_secret);
+        let consumer = Token::new(conf.api_key.to_string(),
+            conf.api_secret.to_string());
         let request_token_response: RequestTokenResponse =
             serde_qs::from_str(&oauth_client::get::<DefaultRequestBuilder>(
             TWITTER_API_REQUEST_TOKEN_URL, &consumer, None, 

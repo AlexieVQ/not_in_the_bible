@@ -1,10 +1,14 @@
 #[macro_use]
 extern crate diesel;
 
-use std::{io::{self, Read}, fs::File};
+use std::{io::{self, Read}, fs::File, thread, sync::Arc};
 
-use dictionary::Dictionary;
+use db_request_queue::DBRequestQueue;
+use db_response_queue::DBResponseQueue;
+use history::{History, DBHistory};
 use rustop::opts;
+use twitter::{twitter_conf::TwitterConf, listener, connection::Connection, responder};
+use yaml_rust::YamlLoader;
 
 use crate::in_memory_dictionary::InMemoryDictionary;
 
@@ -21,12 +25,16 @@ mod db_response_queue;
 mod history;
 mod twitter;
 
+const DEFAULT_CONFIG: &str = "
+twitter:
+";
+
 fn main() {
     let (args, _) = opts! {
         synopsis concat!("A program that searches for word that are absent in ",
                 "a text file.");
         opt input: Option<String>, desc: "Input file name.";
-        param words: Vec<String>, desc: "Words to search.";
+        opt config: Option<String>, desc: "Config file name (.yaml).";
     }.parse_or_exit();
     let mut file = match args.input {
         Some(path) => match File::open(path) {
@@ -38,13 +46,42 @@ fn main() {
         },
         None => Box::new(io::stdin()) as Box<dyn Read>,
     };
+    let yaml_config = match args.config {
+        Some(path) => {
+            let mut str = String::new();
+            File::open(path)
+                .expect("Error opening config file")
+                .read_to_string(&mut str)
+                .expect("Error reading config file");
+            YamlLoader::load_from_str(&str)
+                .expect("Error parsing config file")
+        },
+        None => YamlLoader::load_from_str(DEFAULT_CONFIG).unwrap(),
+    };
+    let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
+    let connection = Arc::new(Connection::init(twitter_conf));
     let dic = InMemoryDictionary::from_input(&mut file);
-    let absent = dic.absent_words(&args
-            .words
-            .iter()
-            .map(|w| w.as_ref())
-            .collect::<Vec<&str>>());
-    for word in absent {
-        println!("{}", word);
-    }
+
+    let t_dic = thread::spawn(move || {
+        let mut request_queue = DBRequestQueue::new();
+        let mut response_queue = DBResponseQueue::new();
+        searcher::run(&mut request_queue, &mut response_queue, &dic);
+    });
+
+    let c1 = connection.clone();
+    let t_req = thread::spawn(move || {
+        let mut request_queue = DBRequestQueue::new();
+        let history = DBHistory::new();
+        listener::listen(&c1, &mut request_queue, &history);
+    });
+
+    let t_res = thread::spawn(move || {
+        let mut response_queue = DBResponseQueue::new();
+        let mut history = DBHistory::new();
+        responder::respond(&connection, &mut response_queue, &mut history);
+    });
+
+    t_dic.join().unwrap();
+    t_req.join().unwrap();
+    t_res.join().unwrap();
 }

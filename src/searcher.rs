@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// A routine that wait for requests and send responses to them.
-fn run(request_queue: &mut impl JobQueue<Request>,
+pub fn run(request_queue: &mut impl JobQueue<Request>,
        response_queue: &mut impl JobQueue<Response>,
        dictionary: &impl Dictionary) {
     loop {
