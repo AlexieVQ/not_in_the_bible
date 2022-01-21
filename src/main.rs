@@ -25,16 +25,12 @@ mod db_response_queue;
 mod history;
 mod twitter;
 
-const DEFAULT_CONFIG: &str = "
-twitter:
-";
-
 fn main() {
     let (args, _) = opts! {
         synopsis concat!("A program that searches for word that are absent in ",
                 "a text file.");
         opt input: Option<String>, desc: "Input file name.";
-        opt config: Option<String>, desc: "Config file name (.yaml).";
+        opt config: String, desc: "Config file name (.yaml).";
     }.parse_or_exit();
     let mut file = match args.input {
         Some(path) => match File::open(path) {
@@ -46,18 +42,13 @@ fn main() {
         },
         None => Box::new(io::stdin()) as Box<dyn Read>,
     };
-    let yaml_config = match args.config {
-        Some(path) => {
-            let mut str = String::new();
-            File::open(path)
-                .expect("Error opening config file")
-                .read_to_string(&mut str)
-                .expect("Error reading config file");
-            YamlLoader::load_from_str(&str)
-                .expect("Error parsing config file")
-        },
-        None => YamlLoader::load_from_str(DEFAULT_CONFIG).unwrap(),
-    };
+    let mut str = String::new();
+    File::open(args.config)
+        .expect("Error opening config file")
+        .read_to_string(&mut str)
+        .expect("Error reading config file");
+    let yaml_config = YamlLoader::load_from_str(&str)
+        .expect("Error parsing config file");
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));
     let dic = InMemoryDictionary::from_input(&mut file);
