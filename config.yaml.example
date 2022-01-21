@@ -1,0 +1,5 @@
+twitter:
+  api_key: <YOUR_API_KEY>
+  api_secret: <YOUR_API_SECRET>
+  updates_per_hour: 12
+  refresh_interval: 60
