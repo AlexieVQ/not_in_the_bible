@@ -22,7 +22,8 @@ impl Request {
     /// Creates a request from given tweets.
     pub fn from_tweets(request: &Tweet, op: &Tweet) -> Request {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"@\w+").unwrap();
+            static ref RE: Regex = Regex::new(r"(@\w+|https://t\.co/\w+)")
+                .unwrap();
         }
         Request {
             user: request.user.screen_name.to_string(),
@@ -37,7 +38,9 @@ impl Request {
 
     /// Returns words to analyze.
     pub fn words(&self) -> Vec<&str> {
-        self.text.tokenize()
+        let w =self.text.tokenize();
+        println!("{}", w.join(", "));
+        w
     }
 
 }
