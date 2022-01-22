@@ -1,4 +1,4 @@
-use std::{collections::HashSet, io::{Read, BufReader, BufRead}, borrow::Borrow};
+use std::{collections::HashSet, io::{Read, BufReader, BufRead}};
 
 use unidecode::unidecode;
 
@@ -35,12 +35,6 @@ impl InMemoryDictionary {
         dic
     }
 
-    /// Prints all this dictionary's entries.
-    pub fn print(&self) {
-        for word in self.words.borrow() {
-            println!("{}", word);
-        }
-    }
 }
 
 impl Dictionary for InMemoryDictionary {

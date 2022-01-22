@@ -5,7 +5,7 @@ use std::{io::{self, Read}, fs::File, thread, sync::Arc};
 
 use db_request_queue::DBRequestQueue;
 use db_response_queue::DBResponseQueue;
-use history::{History, DBHistory};
+use history::DBHistory;
 use rustop::opts;
 use twitter::{twitter_conf::TwitterConf, listener, connection::Connection, responder};
 use yaml_rust::YamlLoader;
