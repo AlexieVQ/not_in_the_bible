@@ -12,7 +12,7 @@ pub trait Tokenize {
 impl Tokenize for str {
     fn tokenize(&self) -> Vec<&str> {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"[[:alpha:]]+").unwrap();
+            static ref RE: Regex = Regex::new(r"\p{L}+").unwrap();
         }
         RE.find_iter(&self).map(|m| m.as_str()).collect()
     }

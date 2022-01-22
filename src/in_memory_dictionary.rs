@@ -24,7 +24,7 @@ impl InMemoryDictionary {
             match line {
                 Ok(s) => {
                     for word in s.tokenize() {
-                        dic.words.insert(word.to_lowercase());
+                        dic.words.insert(unidecode(word).to_lowercase());
                     }
                 },
                 Err(e) => {
