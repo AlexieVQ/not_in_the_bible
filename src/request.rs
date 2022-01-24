@@ -32,7 +32,13 @@ impl Request {
                 "%a %b %d %T %z %Y").unwrap(),
             op_id: op.id_str.to_string(),
             op_author: op.user.screen_name.to_string(),
-            text: RE.replace_all(&op.text, "").to_string()
+            text: RE.replace_all(match &op.full_text {
+                Some(text) => &text,
+                None => &op
+                    .text
+                    .as_ref()
+                    .expect("No text nor full_text field"),
+            }, "").to_string()
         }
     }
 

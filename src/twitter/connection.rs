@@ -155,6 +155,7 @@ impl <'a> Connection<'a> {
                 Cow::Owned(since.to_string()));
         }
         param.insert(Cow::Borrowed("count"), Cow::Borrowed("200"));
+        param.insert(Cow::Borrowed("tweet_mode"), Cow::Borrowed("extended"));
         self.get(TWITTER_API_MENTIONS_TIMELINE_URL, param)
             .unwrap_or(vec![])
     }
@@ -166,6 +167,7 @@ impl <'a> Connection<'a> {
         param.insert(Cow::Borrowed("id"), Cow::Owned(id.to_string()));
         param.insert(Cow::Borrowed("include_entities"),
             Cow::Borrowed("false"));
+        param.insert(Cow::Borrowed("tweet_mode"), Cow::Borrowed("extended"));
         self.get(TWITTER_API_TWEET_SHOW_URL, param)
     }
 
