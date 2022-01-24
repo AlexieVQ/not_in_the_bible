@@ -17,14 +17,13 @@ pub fn listen(connection: &Connection,
             Some(str) => Some(&str),
             None => None,
         });
-        if last_mention_id.is_none() {
-            if let Some(tweet) = mentions.get(0) {
-                last_mention_id = Some(tweet.id_str.to_string());
-            }
+        if let Some(mention) = mentions.get(0) {
+            last_mention_id = Some(mention.id_str.to_string());
         }
         for mention in mentions {
             if let Some(op_id) = mention.in_reply_to_status_id_str.as_ref() {
-                if !history.exists(&op_id) {
+                if mention.in_reply_to_user_id_str.as_ref() !=
+                    Some(&connection.user_id) && !history.exists(&op_id) {
                     match connection.by_id(&op_id) {
                         Ok(op) => {
                             let request = Request::from_tweets(&mention, &op);

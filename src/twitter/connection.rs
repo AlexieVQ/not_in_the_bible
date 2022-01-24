@@ -24,9 +24,13 @@ const TWITTER_API_TWEET_SHOW_URL: &str =
 const TWITTER_API_STATUSES_UPDATE_URL: &str =
     "https://api.twitter.com/1.1/statuses/update.json";
 
+const TWITTER_API_VERIFY_CREDENTIALS_URL: &str =
+    "https://api.twitter.com/1.1/account/verify_credentials.json";
+
 /// A connection to a Twitter account.
 pub struct Connection<'a> {
     pub conf: TwitterConf,
+    pub user_id: String,
     consumer: Token<'a>,
     token: Token<'a>,
 }
@@ -46,6 +50,12 @@ struct AccessTokenResponse {
     pub oauth_token_secret: String,
     pub user_id: String,
     pub screen_name: String,
+}
+
+/// Response from verify_credentials
+#[derive(Deserialize)]
+struct VerifyCredentials {
+    pub id_str: String,
 }
 
 impl <'a> Connection<'a> {
@@ -84,8 +94,23 @@ impl <'a> Connection<'a> {
             .text()
             .expect("Error getting access token text response"))
             .expect("Error deserializing access token response");
-        let access_token = Token::new(access_token_response.oauth_token, access_token_response.oauth_token_secret);
-        Connection { conf, consumer, token: access_token }
+        let access_token = Token::new(access_token_response.oauth_token,
+            access_token_response.oauth_token_secret);
+        let verify_credentials: VerifyCredentials = serde_json::from_str(
+            &oauth_client::get::<DefaultRequestBuilder>(
+                TWITTER_API_VERIFY_CREDENTIALS_URL,
+                &consumer,
+                Some(&access_token),
+                None,
+                &()
+            ).expect("Error verifying user credentials"))
+            .expect("Malformed JSON data");
+        Connection {
+            conf,
+            consumer,
+            token: access_token,
+            user_id: verify_credentials.id_str
+        }
     }
 
     /// Send a GET request to the Twitter API.
