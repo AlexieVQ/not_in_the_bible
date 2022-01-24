@@ -12,14 +12,15 @@ pub fn respond(connection: &Connection,
         (3600 / connection.conf.updates_per_hour).try_into().unwrap(), 0);
     loop {
         let response = response_queue.take();
-        history.add(&response.op_id);
         let users: Vec<&str> = if response.op_author != response.user {
             vec![&response.user, &response.op_author]
         } else {
             vec![&response.user]
         };
         match connection.reply(&response.id, &users, &response.body) {
-            Ok(_) => {},
+            Ok(_) => {
+                history.add(&response.op_id);
+            },
             Err(error) => {
                 eprintln!("Error while replying to {}: {}", &response.id, error);
             },
