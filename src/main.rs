@@ -62,8 +62,7 @@ fn main() {
     let c1 = connection.clone();
     let t_req = thread::spawn(move || {
         let mut request_queue = DBRequestQueue::new();
-        let history = DBHistory::new();
-        listener::listen(&c1, &mut request_queue, &history);
+        listener::listen(&c1, &mut request_queue);
     });
 
     let t_res = thread::spawn(move || {

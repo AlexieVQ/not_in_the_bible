@@ -6,7 +6,7 @@ use diesel::{
     RunQueryDsl,
     QueryDsl,
     ExpressionMethods,
-    result::{Error::{NotFound, self}, DatabaseErrorKind}
+    result::Error::{NotFound, self}
 };
 use dotenv::dotenv;
 use lazy_static::lazy_static;
@@ -42,8 +42,10 @@ impl JobQueue<Request> for DBRequestQueue {
                     .values(&request)
                     .get_result::<Request>(&self.connection) {
             Ok(_) => {},
-            Err(Error::DatabaseError(DatabaseErrorKind::UniqueViolation, _)) =>
-                        {},
+            Err(Error::DatabaseError(_, error)) => {
+                eprintln!("Database error while submitting request {}: {}",
+                    request.id, error.message());
+            },
             Err(error) => {
                 panic!("Error submitting request to database: {}", error);
             }

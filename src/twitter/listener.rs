@@ -1,14 +1,13 @@
 use std::{thread::sleep, time::Duration, convert::TryInto};
 
-use crate::{job_queue::JobQueue, request::Request, history::History};
+use crate::{job_queue::JobQueue, request::Request};
 
 use super::connection::Connection;
 
 /// Routine that listens to incoming Twitter mentions and adds request in the
 /// request queue.
 pub fn listen(connection: &Connection,
-              request_queue: &mut impl JobQueue<Request>,
-              history: &impl History) {
+              request_queue: &mut impl JobQueue<Request>) {
     let mut last_mention_id: Option<String> = None;
     let sleep_duration = Duration::new(connection.conf
         .refresh_interval.try_into().unwrap(), 0);
@@ -23,7 +22,7 @@ pub fn listen(connection: &Connection,
         for mention in mentions {
             if let Some(op_id) = mention.in_reply_to_status_id_str.as_ref() {
                 if mention.in_reply_to_user_id_str.as_ref() !=
-                    Some(&connection.user_id) && !history.exists(&op_id) {
+                    Some(&connection.user_id) {
                     match connection.by_id(&op_id) {
                         Ok(op) => {
                             let request = Request::from_tweets(&mention, &op);
