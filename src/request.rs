@@ -15,6 +15,7 @@ pub struct Request {
     pub op_id: String,
     pub op_author: String,
     pub text: String,
+    pub lang: Option<String>,
 }
 
 impl Request {
@@ -38,7 +39,11 @@ impl Request {
                     .text
                     .as_ref()
                     .expect("No text nor full_text field"),
-            }, "").to_string()
+            }, "").to_string(),
+            lang: match &op.lang {
+                Some(lang) => Some(lang.to_string()),
+                None => None
+            },
         }
     }
 

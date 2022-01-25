@@ -12,6 +12,7 @@ table! {
         op_id -> Varchar,
         op_author -> Varchar,
         text -> Text,
+        lang -> Nullable<Varchar>,
     }
 }
 

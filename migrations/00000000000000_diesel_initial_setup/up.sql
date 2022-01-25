@@ -8,7 +8,8 @@ CREATE TABLE requests (
     "date" TIMESTAMP NOT NULL,
     op_id VARCHAR UNIQUE NOT NULL,
     op_author VARCHAR NOT NULL,
-    "text" TEXT NOT NULL
+    "text" TEXT NOT NULL,
+    lang VARCHAR
 );
 
 CREATE TABLE responses (

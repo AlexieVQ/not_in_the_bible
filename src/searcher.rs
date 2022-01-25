@@ -23,10 +23,13 @@ static_loader! {
 pub fn run(request_queue: &mut impl JobQueue<Request>,
        response_queue: &mut impl JobQueue<Response>,
        dictionary: &impl Dictionary) {
-    let lang = &FR;
     let book = "the Bible";
     loop {
         let request = request_queue.take();
+        let lang = match &request.lang {
+            Some(lang) => lang.parse().unwrap_or(EN),
+            None => EN,
+        };
         let words = request.words();
         let absent_words = dictionary.absent_words(&words);
         let mut args = HashMap::new();
@@ -42,15 +45,15 @@ pub fn run(request_queue: &mut impl JobQueue<Request>,
                 let last = absent_words.last().unwrap();
                 let list = &absent_words[..n - 1];
                 format!("“{}” {} “{}”", list.join("”, “"),
-                    LOCALES.lookup(lang, "and"), last)
+                    LOCALES.lookup(&lang, "and"), last)
             }
         }.into());
         let message: String = if absent_words.is_empty() {
-            LOCALES.lookup_with_args(lang, "in_book", &args)
+            LOCALES.lookup_with_args(&lang, "in_book", &args)
         } else if absent_words.len() == words.len() {
-            LOCALES.lookup_with_args(lang, "nothing_in_book", &args)
+            LOCALES.lookup_with_args(&lang, "nothing_in_book", &args)
         } else {
-            LOCALES.lookup_with_args(lang, "not_in_book", &args)
+            LOCALES.lookup_with_args(&lang, "not_in_book", &args)
         };
         response_queue.submit(Response::new(&request, message));
     }
