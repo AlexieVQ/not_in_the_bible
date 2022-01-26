@@ -1,5 +1,7 @@
 use std::{thread::sleep, time::Duration, convert::TryInto};
 
+use regex::Regex;
+
 use crate::{job_queue::JobQueue, request::Request};
 
 use super::connection::Connection;
@@ -8,6 +10,7 @@ use super::connection::Connection;
 /// request queue.
 pub fn listen(connection: &Connection,
               request_queue: &mut impl JobQueue<Request>) {
+    let regex = Regex::new(&format!("@{}", &connection.user_name)).unwrap();
     let mut last_mention_id: Option<String> = None;
     let sleep_duration = Duration::new(connection.conf
         .refresh_interval.try_into().unwrap(), 0);
@@ -25,8 +28,15 @@ pub fn listen(connection: &Connection,
                     Some(&connection.user_id) {
                     match connection.by_id(&op_id) {
                         Ok(op) => {
-                            let request = Request::from_tweets(&mention, &op);
-                            request_queue.submit(request);
+                            if !regex.is_match(
+                                op.text.as_ref().unwrap_or(
+                                    op.full_text.as_ref().unwrap_or(
+                                        &"".to_string()))) {
+                                let request = Request::from_tweets(&mention, &op);
+                                request_queue.submit(request);
+                            } else {
+                                println!("{} rejeté", op.id_str);
+                            }
                         },
                         Err(error) => {
                             eprintln!("Error querying tweet {}: {}", op_id,

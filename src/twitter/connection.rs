@@ -31,6 +31,7 @@ const TWITTER_API_VERIFY_CREDENTIALS_URL: &str =
 pub struct Connection<'a> {
     pub conf: TwitterConf,
     pub user_id: String,
+    pub user_name: String,
     consumer: Token<'a>,
     token: Token<'a>,
 }
@@ -56,6 +57,7 @@ struct AccessTokenResponse {
 #[derive(Deserialize)]
 struct VerifyCredentials {
     pub id_str: String,
+    pub screen_name: String,
 }
 
 impl <'a> Connection<'a> {
@@ -109,7 +111,8 @@ impl <'a> Connection<'a> {
             conf,
             consumer,
             token: access_token,
-            user_id: verify_credentials.id_str
+            user_id: verify_credentials.id_str,
+            user_name: verify_credentials.screen_name,
         }
     }
 
