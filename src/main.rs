@@ -1,28 +1,20 @@
-#[macro_use]
-extern crate diesel;
+use std::{fs::File, io::Read, sync::Arc, thread};
 
-use std::{io::Read, fs::File, thread, sync::Arc};
-
-use db_request_queue::DBRequestQueue;
-use db_response_queue::DBResponseQueue;
-use history::DBHistory;
-use in_memory_dictionary::InMemoryDictionarySet;
+use not_in_the_bible::{
+    twitter::{
+        twitter_conf::TwitterConf,
+        connection::Connection,
+        listener,
+        responder,
+    },
+    in_memory_dictionary::InMemoryDictionarySet,
+    db_request_queue::DBRequestQueue,
+    db_response_queue::DBResponseQueue,
+    searcher,
+    history::DBHistory,
+};
 use rustop::opts;
-use twitter::{twitter_conf::TwitterConf, listener, connection::Connection, responder};
 use yaml_rust::YamlLoader;
-
-mod in_memory_dictionary;
-mod dictionary;
-mod tokenize;
-mod request;
-mod job_queue;
-mod response;
-mod searcher;
-mod db_request_queue;
-mod schema;
-mod db_response_queue;
-mod history;
-mod twitter;
 
 fn main() {
     let (args, _) = opts! {
@@ -47,7 +39,7 @@ fn main() {
         searcher::run(&mut request_queue, &mut response_queue, &dics);
     });
 
-    let c1 = connection.clone();
+    let c1 = Clone::clone(&connection);
     let t_req = thread::spawn(move || {
         let mut request_queue = DBRequestQueue::new();
         listener::listen(&c1, &mut request_queue);
