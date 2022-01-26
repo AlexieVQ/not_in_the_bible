@@ -1,4 +1,4 @@
-use std::{collections::{HashSet, HashMap}, io::{Read, BufReader, BufRead}, panic, fs::File};
+use std::{collections::{HashSet, HashMap}, io::{Read, BufReader, BufRead, Write}, panic, fs::File};
 
 use unidecode::unidecode;
 use yaml_rust::Yaml;
@@ -62,6 +62,14 @@ impl Dictionary for InMemoryDictionary {
 
     fn lang(&self) -> &str {
         &self.lang
+    }
+
+    fn print(&self, out: &mut impl Write) {
+        let mut words: Vec<&String> = self.words.iter().collect();
+        words.sort();
+        for word in words {
+            writeln!(out, "{}", word).expect("Error writing to output");
+        }
     }
 }
 

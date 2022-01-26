@@ -1,3 +1,5 @@
+use std::io::Write;
+
 /// Trait for a dictionary, that stores words.
 pub trait Dictionary {
 
@@ -20,6 +22,9 @@ pub trait Dictionary {
         }
         vec
     }
+
+    /// Prints all the words in alphabetic order to given output.
+    fn print(&self, out: &mut impl Write);
 
 }
 
