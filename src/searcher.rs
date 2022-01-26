@@ -10,7 +10,6 @@ use crate::{
 };
 
 const EN: LanguageIdentifier = langid!("en");
-const FR: LanguageIdentifier = langid!("fr");
 
 static_loader! {
     static LOCALES = {
@@ -23,7 +22,7 @@ static_loader! {
 pub fn run(request_queue: &mut impl JobQueue<Request>,
        response_queue: &mut impl JobQueue<Response>,
        dictionary: &impl Dictionary) {
-    let book = "the Bible";
+    let book = dictionary.name();
     loop {
         let request = request_queue.take();
         let lang = match &request.lang {

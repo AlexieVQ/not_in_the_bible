@@ -1,6 +1,12 @@
 /// Trait for a dictionary, that stores words.
 pub trait Dictionary {
 
+    /// Name of the dictionary.
+    fn name(&self) -> &str;
+
+    /// Language of the dictionary.
+    fn lang(&self) -> &str;
+
     /// Tests if this dictionary contains given word.
     fn contains(&self, word: &str) -> bool;
 

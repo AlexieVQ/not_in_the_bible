@@ -7,6 +7,8 @@ use crate::{dictionary::Dictionary, tokenize::Tokenize};
 /// A Dictionary that stores its set of words in memory.
 pub struct InMemoryDictionary {
     words: HashSet<String>,
+    name: String,
+    lang: String,
 }
 
 impl InMemoryDictionary {
@@ -14,6 +16,8 @@ impl InMemoryDictionary {
     fn new() -> InMemoryDictionary {
         InMemoryDictionary {
             words: HashSet::new(),
+            name: "the Bible".to_string(),
+            lang: "en".to_string(),
         }
     }
 
@@ -41,5 +45,13 @@ impl Dictionary for InMemoryDictionary {
     fn contains(&self, word: &str) -> bool {
         let word = unidecode(&word.to_lowercase());
         self.words.contains(&word)
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn lang(&self) -> &str {
+        &self.lang
     }
 }
