@@ -22,3 +22,15 @@ pub trait Dictionary {
     }
 
 }
+
+/// Trait for a set of dictionaries.
+pub trait DictionarySet<T: Dictionary> {
+
+    /// Returns the dictionary corresponding to given lang, or the default
+    /// Dictionary if there is none.
+    fn by_lang(&self, lang: &str) -> &T;
+
+    /// Returns default dictionary.
+    fn default(&self) -> &T;
+
+}

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use fluent_templates::{static_loader, LanguageIdentifier, fs::langid, Loader, fluent_bundle::{FluentValue, types::FluentNumber}};
 
 use crate::{
-    dictionary::Dictionary,
+    dictionary::{Dictionary, DictionarySet},
     response::Response,
     job_queue::JobQueue,
     request::Request
@@ -19,12 +19,16 @@ static_loader! {
 }
 
 /// A routine that wait for requests and send responses to them.
-pub fn run(request_queue: &mut impl JobQueue<Request>,
+pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
        response_queue: &mut impl JobQueue<Response>,
-       dictionary: &impl Dictionary) {
-    let book = dictionary.name();
+       dictionaries: &impl DictionarySet<T>) {
     loop {
         let request = request_queue.take();
+        let dictionary = match &request.lang {
+            Some(lang) => dictionaries.by_lang(lang),
+            None => dictionaries.default(),
+        };
+        let book = dictionary.name();
         let lang = match &request.lang {
             Some(lang) => lang.parse().unwrap_or(EN),
             None => EN,

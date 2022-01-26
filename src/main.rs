@@ -1,16 +1,15 @@
 #[macro_use]
 extern crate diesel;
 
-use std::{io::{self, Read}, fs::File, thread, sync::Arc};
+use std::{io::Read, fs::File, thread, sync::Arc};
 
 use db_request_queue::DBRequestQueue;
 use db_response_queue::DBResponseQueue;
 use history::DBHistory;
+use in_memory_dictionary::InMemoryDictionarySet;
 use rustop::opts;
 use twitter::{twitter_conf::TwitterConf, listener, connection::Connection, responder};
 use yaml_rust::YamlLoader;
-
-use crate::in_memory_dictionary::InMemoryDictionary;
 
 mod in_memory_dictionary;
 mod dictionary;
@@ -29,19 +28,8 @@ fn main() {
     let (args, _) = opts! {
         synopsis concat!("A program that searches for word that are absent in ",
                 "a text file.");
-        opt input: Option<String>, desc: "Input file name.";
         opt config: String, desc: "Config file name (.yaml).";
     }.parse_or_exit();
-    let mut file = match args.input {
-        Some(path) => match File::open(path) {
-            Ok(file) =>
-                    Box::new(file) as Box<dyn Read>,
-            Err(e) => {
-                panic!("Error while opening input file: {}", e);
-            },
-        },
-        None => Box::new(io::stdin()) as Box<dyn Read>,
-    };
     let mut str = String::new();
     File::open(args.config)
         .expect("Error opening config file")
@@ -51,12 +39,12 @@ fn main() {
         .expect("Error parsing config file");
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));
-    let dic = InMemoryDictionary::from_input(&mut file);
+    let dics = InMemoryDictionarySet::from_config(&yaml_config[0]["sources"]);
 
     let t_dic = thread::spawn(move || {
         let mut request_queue = DBRequestQueue::new();
         let mut response_queue = DBResponseQueue::new();
-        searcher::run(&mut request_queue, &mut response_queue, &dic);
+        searcher::run(&mut request_queue, &mut response_queue, &dics);
     });
 
     let c1 = connection.clone();
