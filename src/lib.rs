@@ -1,6 +1,11 @@
 #[macro_use]
 extern crate diesel;
 
+#[macro_use]
+extern crate diesel_migrations;
+
+embed_migrations!("migrations");
+
 pub mod in_memory_dictionary;
 pub mod dictionary;
 pub mod tokenize;

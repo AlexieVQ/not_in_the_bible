@@ -14,7 +14,7 @@ use crate::{
     schema::responses,
     job_queue::JobQueue,
     response::Response,
-    db_conf::DBConf
+    db_conf::{DBConf, run_migrations}
 };
 
 const SLEEP_DURATION_SEC: u64 = 60;
@@ -31,6 +31,7 @@ impl DBResponseQueue {
         let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
             .expect(&format!("Error connecting to {}", &db_url));
+        run_migrations(&connection);
         DBResponseQueue { connection }
     }
 

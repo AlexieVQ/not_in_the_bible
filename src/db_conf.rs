@@ -1,4 +1,9 @@
+use std::io::stdout;
+
+use diesel::PgConnection;
 use yaml_rust::Yaml;
+
+use crate::embedded_migrations;
 
 /// Configuration for the database.
 pub struct DBConf {
@@ -20,4 +25,10 @@ impl DBConf {
             .to_string())
     }
 
+}
+
+/// Runs database migrations.
+pub fn run_migrations(connection: &PgConnection) {
+    embedded_migrations::run_with_output(connection, &mut stdout())
+        .expect("Error while running migrations");
 }
