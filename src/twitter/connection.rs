@@ -104,8 +104,8 @@ impl <'a> Connection<'a> {
     pub fn init(conf: TwitterConf) -> Connection<'a> {
         let consumer = Token::new(conf.api_key.to_string(),
             conf.api_secret.to_string());
-        let access_token = Connection::generate_access_token(&conf.api_key,
-            &conf.api_secret);
+        let access_token = Token::new(conf.token.to_string(),
+            conf.token_secret.to_string());
         let verify_credentials: VerifyCredentials = serde_json::from_str(
             &oauth_client::get::<DefaultRequestBuilder>(
                 TWITTER_API_VERIFY_CREDENTIALS_URL,

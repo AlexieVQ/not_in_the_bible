@@ -2,6 +2,8 @@ db: postgres://username:password@localhost/not_in_the_bible
 twitter:
   api_key: <YOUR_API_KEY>
   api_secret: <YOUR_API_SECRET>
+  token: <YOUR_ACCESS_TOKEN>
+  token_secret: <YOUR_ACCESS_TOKEN_SECRET>
   updates_per_hour: 12
   refresh_interval: 60
 sources:
