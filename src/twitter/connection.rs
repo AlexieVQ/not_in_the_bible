@@ -115,6 +115,8 @@ impl <'a> Connection<'a> {
                 &()
             ).expect("Error verifying user credentials"))
             .expect("Malformed JSON data");
+        println!("Connection to Twitter account {} established",
+            verify_credentials.screen_name);
         Connection {
             conf,
             consumer,
