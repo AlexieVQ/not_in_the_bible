@@ -34,8 +34,6 @@ pub fn listen(connection: &Connection,
                                         &"".to_string()))) {
                                 let request = Request::from_tweets(&mention, &op);
                                 request_queue.submit(request);
-                            } else {
-                                println!("{} rejeté", op.id_str);
                             }
                         },
                         Err(error) => {

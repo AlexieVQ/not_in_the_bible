@@ -49,9 +49,7 @@ impl Request {
 
     /// Returns words to analyze.
     pub fn words(&self) -> Vec<&str> {
-        let w =self.text.tokenize();
-        println!("{}", w.join(", "));
-        w
+        self.text.tokenize()
     }
 
 }
