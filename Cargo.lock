@@ -195,17 +195,7 @@ version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "960ac6317b829b94c67f9a774e8b56db388405e174855a5a84d4b461ff85b281"
 dependencies = [
- "fluent-bundle 0.14.4",
- "unic-langid",
-]
-
-[[package]]
-name = "fluent"
-version = "0.16.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61f69378194459db76abd2ce3952b790db103ceb003008d3d50d97c41ff847a7"
-dependencies = [
- "fluent-bundle 0.15.2",
+ "fluent-bundle",
  "unic-langid",
 ]
 
@@ -216,27 +206,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba3cc2d1c59a0daaa93bb346db97e1ebad1067c5ffedc1af8b937a9d8caa6a77"
 dependencies = [
  "fluent-langneg",
- "fluent-syntax 0.10.3",
+ "fluent-syntax",
  "intl-memoizer",
  "intl_pluralrules",
  "ouroboros",
  "rustc-hash",
- "smallvec",
- "unic-langid",
-]
-
-[[package]]
-name = "fluent-bundle"
-version = "0.15.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e242c601dec9711505f6d5bbff5bedd4b61b2469f2e8bb8e57ee7c9747a87ffd"
-dependencies = [
- "fluent-langneg",
- "fluent-syntax 0.11.0",
- "intl-memoizer",
- "intl_pluralrules",
- "rustc-hash",
- "self_cell",
  "smallvec",
  "unic-langid",
 ]
@@ -255,15 +229,6 @@ name = "fluent-syntax"
 version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "784f660373ea898f712a7e67b43f35bf79608d46112747c29767d087611d716b"
-
-[[package]]
-name = "fluent-syntax"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0abed97648395c902868fee9026de96483933faa54ea3b40d652f7dfe61ca78"
-dependencies = [
- "thiserror",
-]
 
 [[package]]
 name = "fluent-template-macros"
@@ -287,10 +252,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fa6b2186b959236019d67fb839f036c83a799edd4389c505678ca1b8d41e9ed"
 dependencies = [
  "arc-swap",
- "fluent 0.14.4",
- "fluent-bundle 0.14.4",
+ "fluent",
+ "fluent-bundle",
  "fluent-langneg",
- "fluent-syntax 0.10.3",
+ "fluent-syntax",
  "fluent-template-macros",
  "flume",
  "heck",
@@ -739,7 +704,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "diesel",
- "fluent 0.16.0",
  "fluent-templates",
  "lazy_static",
  "oauth-client",
@@ -1179,12 +1143,6 @@ dependencies = [
  "core-foundation-sys",
  "libc",
 ]
-
-[[package]]
-name = "self_cell"
-version = "0.10.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ef965a420fe14fdac7dd018862966a4c14094f900e1650bbc71ddd7d580c8af"
 
 [[package]]
 name = "semver"
