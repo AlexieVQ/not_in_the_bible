@@ -62,13 +62,13 @@ struct VerifyCredentials {
 
 impl <'a> Connection<'a> {
 
-    /// Creates a new connection to a Twitter account.
-    pub fn init(conf: TwitterConf) -> Connection<'a> {
+    /// Generates access tokens for given API key and secret.
+    pub fn generate_access_token(api_key: &str, api_secret: &str) -> Token<'a> {
         let client = Client::builder()
             .build()
             .expect("Error building HTTP client");
-        let consumer = Token::new(conf.api_key.to_string(),
-            conf.api_secret.to_string());
+        let consumer = Token::new(api_key.to_string(),
+            api_secret.to_string());
         let request_token_response: RequestTokenResponse =
             serde_qs::from_str(&oauth_client::get::<DefaultRequestBuilder>(
             TWITTER_API_REQUEST_TOKEN_URL, &consumer, None, 
@@ -89,15 +89,23 @@ impl <'a> Connection<'a> {
             .query(&[
                 ("oauth_token", request_token_response.oauth_token),
                 ("oauth_verifier", code),
-                ("oauth_verifier", conf.api_key.to_string()),
+                ("oauth_verifier", api_key.to_string()),
             ])
             .send()
             .expect("Error sending POST oauth/access_token request")
             .text()
             .expect("Error getting access token text response"))
             .expect("Error deserializing access token response");
-        let access_token = Token::new(access_token_response.oauth_token,
-            access_token_response.oauth_token_secret);
+            Token::new(access_token_response.oauth_token,
+                access_token_response.oauth_token_secret)
+    }
+
+    /// Creates a new connection to a Twitter account.
+    pub fn init(conf: TwitterConf) -> Connection<'a> {
+        let consumer = Token::new(conf.api_key.to_string(),
+            conf.api_secret.to_string());
+        let access_token = Connection::generate_access_token(&conf.api_key,
+            &conf.api_secret);
         let verify_credentials: VerifyCredentials = serde_json::from_str(
             &oauth_client::get::<DefaultRequestBuilder>(
                 TWITTER_API_VERIFY_CREDENTIALS_URL,
