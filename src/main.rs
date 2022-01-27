@@ -11,7 +11,7 @@ use not_in_the_bible::{
     db_request_queue::DBRequestQueue,
     db_response_queue::DBResponseQueue,
     searcher,
-    history::DBHistory,
+    history::DBHistory, db_conf::DBConf,
 };
 use rustop::opts;
 use yaml_rust::YamlLoader;
@@ -29,25 +29,26 @@ fn main() {
         .expect("Error reading config file");
     let yaml_config = YamlLoader::load_from_str(&str)
         .expect("Error parsing config file");
+    let db_conf = DBConf::from_config(&yaml_config[0]["db"]);
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));
     let dics = InMemoryDictionarySet::from_config(&yaml_config[0]["sources"]);
 
+    let mut request_queue = DBRequestQueue::new(&db_conf);
+    let mut response_queue = DBResponseQueue::new(&db_conf);
     let t_dic = thread::spawn(move || {
-        let mut request_queue = DBRequestQueue::new();
-        let mut response_queue = DBResponseQueue::new();
         searcher::run(&mut request_queue, &mut response_queue, &dics);
     });
 
     let c1 = Clone::clone(&connection);
+    let mut request_queue = DBRequestQueue::new(&db_conf);
     let t_req = thread::spawn(move || {
-        let mut request_queue = DBRequestQueue::new();
         listener::listen(&c1, &mut request_queue);
     });
 
+    let mut response_queue = DBResponseQueue::new(&db_conf);
+    let mut history = DBHistory::new(&db_conf);
     let t_res = thread::spawn(move || {
-        let mut response_queue = DBResponseQueue::new();
-        let mut history = DBHistory::new();
         responder::respond(&connection, &mut response_queue, &mut history);
     });
 

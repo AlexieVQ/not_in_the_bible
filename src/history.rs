@@ -1,6 +1,5 @@
-use std::{env, panic};
+use std::panic;
 
-use dotenv::dotenv;
 use diesel::{
     PgConnection,
     Connection,
@@ -9,7 +8,7 @@ use diesel::{
     RunQueryDsl, OptionalExtension, result::{Error, DatabaseErrorKind}
 };
 
-use crate::schema::history;
+use crate::{schema::history, db_conf::DBConf};
 
 /// History of statuses analyzed.
 pub trait History {
@@ -37,10 +36,8 @@ struct HistoryElement {
 impl DBHistory {
 
     /// Creates a new access to the history stored in database.
-    pub fn new() -> DBHistory {
-        dotenv().ok();
-        let db_url = env::var("DATABASE_URL")
-            .expect("DATABASE_URL must be set");
+    pub fn new(conf: &DBConf) -> DBHistory {
+        let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
             .expect(&format!("Error connecting to {}", &db_url));
         DBHistory { connection }

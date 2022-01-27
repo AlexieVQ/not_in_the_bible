@@ -1,4 +1,4 @@
-use std::{env, time::Duration, thread::sleep};
+use std::{time::Duration, thread::sleep};
 
 use diesel::{
     PgConnection,
@@ -8,10 +8,14 @@ use diesel::{
     ExpressionMethods,
     result::{Error::{NotFound, self}, DatabaseErrorKind}
 };
-use dotenv::dotenv;
 use lazy_static::lazy_static;
 
-use crate::{schema::responses, job_queue::JobQueue, response::Response};
+use crate::{
+    schema::responses,
+    job_queue::JobQueue,
+    response::Response,
+    db_conf::DBConf
+};
 
 const SLEEP_DURATION_SEC: u64 = 60;
 
@@ -23,10 +27,8 @@ pub struct DBResponseQueue {
 impl DBResponseQueue {
 
     /// Creates a new access for the response queue sorted in database.
-    pub fn new() -> DBResponseQueue {
-        dotenv().ok();
-        let db_url = env::var("DATABASE_URL")
-            .expect("DATABASE_URL must be set");
+    pub fn new(conf: &DBConf) -> DBResponseQueue {
+        let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
             .expect(&format!("Error connecting to {}", &db_url));
         DBResponseQueue { connection }
