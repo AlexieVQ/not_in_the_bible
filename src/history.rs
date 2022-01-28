@@ -8,7 +8,11 @@ use diesel::{
     RunQueryDsl, OptionalExtension, result::{Error, DatabaseErrorKind}
 };
 
-use crate::{schema::history, db_conf::{DBConf, run_migrations}};
+use crate::{
+    schema::history,
+    db_conf::{DBConf, run_migrations},
+    log_expect::LogExpect,
+};
 
 /// History of statuses analyzed.
 pub trait History {
@@ -39,7 +43,7 @@ impl DBHistory {
     pub fn new(conf: &DBConf) -> DBHistory {
         let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
-            .expect(&format!("Error connecting to {}", &db_url));
+            .log_expect(&format!("Error connecting to {}", &db_url));
         run_migrations(&connection);
         DBHistory { connection }
     }
@@ -53,7 +57,7 @@ impl History for DBHistory {
             .filter(history::id.eq(id))
             .get_result::<HistoryElement>(&self.connection)
             .optional()
-            .expect("Error while reading history from database")
+            .log_expect("Error while reading history from database")
             .is_some()
     }
 

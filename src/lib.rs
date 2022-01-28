@@ -19,3 +19,4 @@ pub mod db_response_queue;
 pub mod history;
 pub mod twitter;
 pub mod db_conf;
+pub mod log_expect;

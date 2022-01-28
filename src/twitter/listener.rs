@@ -1,6 +1,7 @@
 use std::{thread::sleep, time::Duration, convert::TryInto};
 
 use regex::Regex;
+use log::error;
 
 use crate::{job_queue::JobQueue, request::Request};
 
@@ -37,7 +38,7 @@ pub fn listen(connection: &Connection,
                             }
                         },
                         Err(error) => {
-                            eprintln!("Error querying tweet {}: {}", op_id,
+                            error!("Error querying tweet {}: {}", op_id,
                                 error);
                         },
                     };

@@ -1,8 +1,11 @@
 use std::{io::{self, Write, stdout}, collections::HashMap, borrow::Cow};
 
+use log::info;
 use oauth_client::{DefaultRequestBuilder, Token, Error};
 use reqwest::blocking::Client;
 use serde::{Deserialize, de::DeserializeOwned};
+
+use crate::log_expect::LogExpect;
 
 use super::{twitter_conf::TwitterConf, tweet::Tweet};
 
@@ -113,9 +116,9 @@ impl <'a> Connection<'a> {
                 Some(&access_token),
                 None,
                 &()
-            ).expect("Error verifying user credentials"))
-            .expect("Malformed JSON data");
-        println!("Connection to Twitter account {} established",
+            ).log_expect("Error verifying user credentials"))
+            .log_expect("Malformed JSON data");
+        info!("Connection to Twitter account {} established",
             verify_credentials.screen_name);
         Connection {
             conf,
@@ -136,7 +139,7 @@ impl <'a> Connection<'a> {
             Some(&query), &()) {
             Ok(string) => {
                 let object: T = serde_json::from_str(&string)
-                    .expect("Malformed JSON data");
+                    .log_expect("Malformed JSON data");
                 Ok(object)
             },
             Err(error) => Err(error),
@@ -153,7 +156,7 @@ impl <'a> Connection<'a> {
             Some(&body), &()) {
             Ok(string) => {
                 let object: T = serde_json::from_str(&string)
-                    .expect("Malformed JSON data");
+                    .log_expect("Malformed JSON data");
                 Ok(object)
             },
             Err(error) => Err(error),

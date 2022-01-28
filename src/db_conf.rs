@@ -3,7 +3,7 @@ use std::io::stdout;
 use diesel::PgConnection;
 use yaml_rust::Yaml;
 
-use crate::embedded_migrations;
+use crate::{embedded_migrations, log_expect::LogExpect};
 
 /// Configuration for the database.
 pub struct DBConf {
@@ -21,7 +21,7 @@ impl DBConf {
     pub fn from_config(conf: &Yaml) -> DBConf {
         DBConf::new(conf
             .as_str()
-            .expect("Missing or malformed \"db\" url")
+            .log_expect("Missing or malformed \"db\" url")
             .to_string())
     }
 
@@ -30,5 +30,5 @@ impl DBConf {
 /// Runs database migrations.
 pub fn run_migrations(connection: &PgConnection) {
     embedded_migrations::run_with_output(connection, &mut stdout())
-        .expect("Error while running migrations");
+        .log_expect("Error while running migrations");
 }

@@ -14,7 +14,8 @@ use crate::{
     schema::responses,
     job_queue::JobQueue,
     response::Response,
-    db_conf::{DBConf, run_migrations}
+    db_conf::{DBConf, run_migrations},
+    log_expect::LogExpect,
 };
 
 const SLEEP_DURATION_SEC: u64 = 60;
@@ -30,7 +31,7 @@ impl DBResponseQueue {
     pub fn new(conf: &DBConf) -> DBResponseQueue {
         let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
-            .expect(&format!("Error connecting to {}", &db_url));
+            .log_expect(&format!("Error connecting to {}", &db_url));
         run_migrations(&connection);
         DBResponseQueue { connection }
     }
@@ -68,7 +69,7 @@ impl JobQueue<Response> for DBResponseQueue {
                         responses::dsl::responses.filter(
                             responses::id.eq(&response.id)))
                             .execute(&self.connection)
-                            .expect("Error while deleting request from queue");
+                            .log_expect("Error while deleting request from queue");
                     break response;
                 },
                 Err(NotFound) => {

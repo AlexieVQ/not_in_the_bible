@@ -11,7 +11,9 @@ use not_in_the_bible::{
     db_request_queue::DBRequestQueue,
     db_response_queue::DBResponseQueue,
     searcher,
-    history::DBHistory, db_conf::DBConf,
+    history::DBHistory,
+    db_conf::DBConf,
+    log_expect::LogExpect,
 };
 use rustop::opts;
 use yaml_rust::YamlLoader;
@@ -22,13 +24,14 @@ fn main() {
                 "a text file.");
         opt config: String, desc: "Config file name (.yaml).";
     }.parse_or_exit();
+    env_logger::init();
     let mut str = String::new();
     File::open(args.config)
-        .expect("Error opening config file")
+        .log_expect("Error opening config file")
         .read_to_string(&mut str)
-        .expect("Error reading config file");
+        .log_expect("Error reading config file");
     let yaml_config = YamlLoader::load_from_str(&str)
-        .expect("Error parsing config file");
+        .log_expect("Error parsing config file");
     let db_conf = DBConf::from_config(&yaml_config[0]["db"]);
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));

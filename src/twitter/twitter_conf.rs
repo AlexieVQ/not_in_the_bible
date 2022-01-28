@@ -1,5 +1,7 @@
 use yaml_rust::Yaml;
 
+use crate::log_expect::LogExpect;
+
 /// Default maximum number of tweets sent in one hour
 const UDPATES_PER_HOUR: i64 = 12;
 
@@ -23,19 +25,19 @@ impl TwitterConf {
         TwitterConf {
             api_key: yaml["api_key"]
                 .as_str()
-                .expect("Missing or wrong twitter api_key")
+                .log_expect("Missing or wrong twitter api_key")
                 .to_string(),
             api_secret: yaml["api_secret"]
                 .as_str()
-                .expect("Missing or wrong twitter api_secret")
+                .log_expect("Missing or wrong twitter api_secret")
                 .to_string(),
             token: yaml["token"]
                 .as_str()
-                .expect("Missing or wrong twitter token")
+                .log_expect("Missing or wrong twitter token")
                 .to_string(),
             token_secret: yaml["token_secret"]
                 .as_str()
-                .expect("Missing or wrong twitter token_secret")
+                .log_expect("Missing or wrong twitter token_secret")
                 .to_string(),
             updates_per_hour: match yaml["updates_per_hour"] {
                 Yaml::Integer(i) => i,

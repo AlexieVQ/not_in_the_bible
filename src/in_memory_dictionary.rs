@@ -3,7 +3,11 @@ use std::{collections::{HashSet, HashMap}, io::{Read, BufReader, BufRead, Write}
 use unidecode::unidecode;
 use yaml_rust::Yaml;
 
-use crate::{dictionary::{Dictionary, DictionarySet}, tokenize::Tokenize};
+use crate::{
+    dictionary::{Dictionary, DictionarySet},
+    tokenize::Tokenize,
+    log_expect::LogExpect,
+};
 
 /// A Dictionary that stores its set of words in memory.
 pub struct InMemoryDictionary {
@@ -81,19 +85,19 @@ impl InMemoryDictionarySet {
         let mut default: Option<String> = None;
         for dic_conf in conf
             .as_vec()
-            .expect("Missing or wrong \"sources\" array") {
+            .log_expect("Missing or wrong \"sources\" array") {
             let dic = InMemoryDictionary::from_input(
                 &mut File::open(dic_conf["path"]
                     .as_str()
-                    .expect("Missing or wrong source path"))
-                    .expect("Error loading source"),
+                    .log_expect("Missing or wrong source path"))
+                    .log_expect("Error loading source"),
                 dic_conf["name"]
                     .as_str()
-                    .expect("Missing source name")
+                    .log_expect("Missing source name")
                     .to_string(),
                 dic_conf["lang"]
                     .as_str()
-                    .expect("Missing source lang")
+                    .log_expect("Missing source lang")
                     .to_string());
             let lang = String::from(dic.lang());
             dics.insert(dic.lang.to_string(), dic);

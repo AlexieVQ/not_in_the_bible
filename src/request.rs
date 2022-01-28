@@ -3,6 +3,7 @@ use diesel::{Queryable, Insertable};
 use lazy_static::lazy_static;
 use regex::Regex;
 
+use crate::log_expect::LogExpect;
 use crate::{twitter::tweet::Tweet, tokenize::Tokenize};
 use crate::schema::requests;
 
@@ -38,7 +39,7 @@ impl Request {
                 None => &op
                     .text
                     .as_ref()
-                    .expect("No text nor full_text field"),
+                    .log_expect("No text nor full_text field"),
             }, "").to_string(),
             lang: match &op.lang {
                 Some(lang) => Some(lang.to_string()),

@@ -9,12 +9,14 @@ use diesel::{
     result::Error::{NotFound, self}
 };
 use lazy_static::lazy_static;
+use log::{error, warn};
 
 use crate::{
     request::Request,
     schema::requests,
     job_queue::JobQueue,
-    db_conf::{DBConf, run_migrations}
+    db_conf::{DBConf, run_migrations},
+    log_expect::LogExpect,
 };
 
 const SLEEP_DURATION_SEC: u64 = 60;
@@ -30,7 +32,7 @@ impl DBRequestQueue {
     pub fn new(conf: &DBConf) -> DBRequestQueue {
         let db_url = &conf.url;
         let connection = PgConnection::establish(&db_url)
-            .expect(&format!("Error connecting to {}", &db_url));
+            .log_expect(&format!("Error connecting to {}", &db_url));
         run_migrations(&connection);
         DBRequestQueue { connection }
     }
@@ -46,11 +48,12 @@ impl JobQueue<Request> for DBRequestQueue {
                     .get_result::<Request>(&self.connection) {
             Ok(_) => {},
             Err(Error::DatabaseError(_, error)) => {
-                eprintln!("Database error while submitting request {}: {}",
+                warn!("Database error while submitting request {}: {}",
                     request.id, error.message());
             },
             Err(error) => {
-                panic!("Error submitting request to database: {}", error);
+                error!("Error submitting request to database: {}", error);
+                panic!();
             }
         }
     }
@@ -70,7 +73,7 @@ impl JobQueue<Request> for DBRequestQueue {
                         requests::dsl::requests.filter(
                             requests::id.eq(&request.id)))
                             .execute(&self.connection)
-                            .expect("Error while deleting request from queue");
+                            .log_expect("Error while deleting request from queue");
                     break request;
                 },
                 Err(NotFound) => {

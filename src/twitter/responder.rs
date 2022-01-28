@@ -1,5 +1,7 @@
 use std::{time::Duration, convert::TryInto, thread::sleep};
 
+use log::error;
+
 use crate::{job_queue::JobQueue, response::Response, history::History};
 
 use super::connection::Connection;
@@ -22,7 +24,15 @@ pub fn respond(connection: &Connection,
                 history.add(&response.op_id);
             },
             Err(error) => {
-                eprintln!("Error while replying to {}: {}", &response.id, error);
+                error!("Error while replying to {}: {}", &response.id,
+                    match error {
+                    oauth_client::Error::HttpStatus(status) =>
+                        status.to_string(),
+                    oauth_client::Error::Io(error) => error.to_string(),
+                    oauth_client::Error::HttpRequest(error) =>
+                        error.to_string(),
+                    other => other.to_string(),
+                });
             },
         };
         sleep(sleep_duration);
