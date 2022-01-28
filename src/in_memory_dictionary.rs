@@ -22,9 +22,6 @@ pub struct InMemoryDictionarySet {
     default_lang: String,
 }
 
-/// Minimum length of words to search
-const MINIMUM_WORD_LENGTH: usize = 2;
-
 impl InMemoryDictionary {
     /// Creates an empty dictionary.
     fn new(name: String, lang: String) -> InMemoryDictionary {
@@ -43,7 +40,7 @@ impl InMemoryDictionary {
         for line in BufReader::new(input).lines() {
             match line {
                 Ok(s) => {
-                    for word in s.tokenize_min(MINIMUM_WORD_LENGTH) {
+                    for word in s.tokenize() {
                         dic.words.insert(unidecode(word).to_lowercase());
                     }
                 },
