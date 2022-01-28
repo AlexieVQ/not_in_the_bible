@@ -47,7 +47,7 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
             n => {
                 let last = absent_words.last().unwrap();
                 let list = &absent_words[..n - 1];
-                format!("“{}” {} “{}”", list.join("”, “"),
+                format!("{} {} {}", list.join(", "),
                     LOCALES.lookup(&lang, "and"), last)
             }
         }.into());
