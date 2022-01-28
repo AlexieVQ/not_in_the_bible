@@ -38,7 +38,7 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
         let mut args = HashMap::new();
         args.insert("book", book.into());
         args.insert("wordsCount", FluentValue::Number(FluentNumber::from(
-            absent_words.len())));
+            words.len())));
         args.insert("absentWordsCount", FluentValue::Number(
             FluentNumber::from(absent_words.len())));
         args.insert("words", match absent_words.len() {
