@@ -8,6 +8,8 @@ fn main() {
         synopsis "Search for absent words in a text.";
         opt input: Option<String>,
             desc: "Text in which to search (stdin by default)";
+        opt length: Option<usize>,
+            desc: "Minimum length of words to search (all words by default)";
         param words: Vec<String>, desc: "Words to search";
     }.parse_or_exit();
 
@@ -21,7 +23,11 @@ fn main() {
         "".to_string(), "".to_string());
 
     for string in args.words {
-        for word in string.tokenize() {
+        let words = match args.length {
+            Some(length) => string.tokenize_min(length),
+            None => string.tokenize(),
+        };
+        for word in words {
             if !dic.contains(word) {
                 println!("{}", word);
             }

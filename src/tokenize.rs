@@ -7,6 +7,15 @@ pub trait Tokenize {
     /// Splits self into a list of words.
     fn tokenize(&self) -> Vec<&str>;
 
+    /// Splits self into a list of words, keeping only those with a given
+    /// minimum length.
+    fn tokenize_min(&self, len: usize) -> Vec<&str> {
+        self.tokenize()
+            .into_iter()
+            .filter(|word| word.len() >= len)
+            .collect()
+    }
+
 }
 
 impl Tokenize for str {
