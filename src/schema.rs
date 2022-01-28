@@ -13,6 +13,7 @@ table! {
         op_author -> Varchar,
         text -> Text,
         lang -> Nullable<Varchar>,
+        quoted -> Bool,
     }
 }
 
@@ -24,6 +25,7 @@ table! {
         date -> Timestamp,
         op_id -> Varchar,
         op_author -> Varchar,
+        quoted -> Bool,
     }
 }
 

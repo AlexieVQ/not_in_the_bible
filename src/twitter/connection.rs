@@ -202,4 +202,15 @@ impl <'a> Connection<'a> {
         self.post(TWITTER_API_STATUSES_UPDATE_URL, param)
     }
 
+    /// Quotes tweet of given id and given author.
+    pub fn quote(&self, id: &str, author: &str, body: &'a str) ->
+        Result<Tweet, Error<DefaultRequestBuilder>> {
+        let mut param: HashMap<Cow<'a, str>, Cow<'a, str>> = HashMap::new();
+        param.insert(Cow::Borrowed("status"), Cow::Borrowed(body));
+        param.insert(Cow::Borrowed("attachment_url"), 
+            Cow::Owned(format!("https://twitter.com/{}/status/{}", author,
+            id)));
+        self.post(TWITTER_API_STATUSES_UPDATE_URL, param)
+    }
+
 }

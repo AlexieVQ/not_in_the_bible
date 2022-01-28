@@ -7,6 +7,9 @@ use crate::log_expect::LogExpect;
 use crate::{twitter::tweet::Tweet, tokenize::Tokenize};
 use crate::schema::requests;
 
+/// Minimum length of words to search
+const MINIMUM_WORD_LENGTH: usize = 2;
+
 /// A request from a status.
 #[derive(Queryable, Insertable)]
 pub struct Request {
@@ -17,12 +20,13 @@ pub struct Request {
     pub op_author: String,
     pub text: String,
     pub lang: Option<String>,
+    pub quoted: bool,
 }
 
 impl Request {
 
     /// Creates a request from given tweets.
-    pub fn from_tweets(request: &Tweet, op: &Tweet) -> Request {
+    pub fn from_tweets(request: &Tweet, op: &Tweet, quoted: bool) -> Request {
         lazy_static! {
             static ref RE: Regex = Regex::new(r"(@\w+|https://t\.co/\w+)")
                 .unwrap();
@@ -45,12 +49,13 @@ impl Request {
                 Some(lang) => Some(lang.to_string()),
                 None => None
             },
+            quoted,
         }
     }
 
     /// Returns words to analyze.
     pub fn words(&self) -> Vec<&str> {
-        self.text.tokenize()
+        self.text.tokenize_min(MINIMUM_WORD_LENGTH)
     }
 
 }

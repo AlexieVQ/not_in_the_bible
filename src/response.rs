@@ -13,6 +13,7 @@ pub struct Response {
     pub date: NaiveDateTime,
     pub op_id: String,
     pub op_author: String,
+    pub quoted: bool,
 }
 
 impl Response {
@@ -26,6 +27,7 @@ impl Response {
             date: request.date,
             op_id: request.op_id.to_string(),
             op_author: request.op_author.to_string(),
+            quoted: request.quoted,
         }
     }
 
