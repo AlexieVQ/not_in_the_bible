@@ -18,13 +18,14 @@ cargo build --release
 ```
 
 Then you must create a [PostgreSQL](https://www.postgresql.org/) user and
-database (by default we will name it `not_in_the_bible`).
+database for this user (by default we will name this database
+`not_in_the_bible`).
 
 You also need to create a
 [Twitter API v1.1 access](https://developer.twitter.com/en/portal/projects-and-apps)
 to get Twitter API key and secret.
 
-when you have done this, run this command to connect to your Twitter bot's
+When you have done this, run this command to connect to your Twitter bot's
 account with the API key and secret you got:
 
 ```bash
@@ -40,26 +41,21 @@ cp config.yaml.example config.yaml
 
 In this file:
 
-replace `username` and `password` in this line:
-
-```yaml
-db: postgres://username:password@localhost/not_in_the_bible
-```
-
-by the username and the password of the account you have created on your
-PostreSQL database;
-
-then replace these lines:
-
-```yaml
-twitter:
-  api_key: <YOUR_API_KEY>
-  api_secret: <YOUR_API_SECRET>
-  token: <YOUR_ACCESS_TOKEN>
-  token_secret: <YOUR_ACCESS_TOKEN_SECRET>
-```
-
-by the output of `generate_twitter_conf`.
+- replace `username` and `password` in this line:
+  ```yaml
+  db: postgres://username:password@localhost/not_in_the_bible
+  ```
+  by the username and the password of the account you have created on your
+  PostreSQL database;
+- then replace these lines:
+  ```yaml
+  twitter:
+    api_key: <YOUR_API_KEY>
+    api_secret: <YOUR_API_SECRET>
+    token: <YOUR_ACCESS_TOKEN>
+    token_secret: <YOUR_ACCESS_TOKEN_SECRET>
+  ```
+  by the output of `generate_twitter_conf`.
 
 ### Deeper Twitter configuration
 
@@ -93,7 +89,6 @@ list if no source are specified for this language.
 For each source you need to specify:
 
 - `path`: the path to its content, an UTF-8 encoded plain text file,
-- `name`: the name of the book, that will appear in the responses the bot will
-  send,
+- `name`: the name of the book, that will appear in the responses the bot send,
 - `lang`: language tag for the book, corresponding to a language tag supported
   by Twitter.
