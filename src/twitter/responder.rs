@@ -14,15 +14,15 @@ pub fn respond(connection: &Connection,
         (3600 / connection.conf.updates_per_hour).try_into().unwrap(), 0);
     loop {
         let response = response_queue.take();
-        let users: Vec<&str> = if response.op_author != response.user {
-            vec![&response.user, &response.op_author]
-        } else {
-            vec![&response.user]
-        };
         let result = if response.quoted {
             connection.quote(&response.op_id, &response.op_author,
                 &response.body)
         } else {
+            let users: Vec<&str> = if response.op_author != response.user {
+                vec![&response.user, &response.op_author]
+            } else {
+                vec![&response.user]
+            };
             connection.reply(&response.id, &users, &response.body)
         };
         match result {
