@@ -13,3 +13,4 @@ sources:
   - path: examples/bible_fr.txt
     name: la Bible
     lang: fr
+show_percent: 100

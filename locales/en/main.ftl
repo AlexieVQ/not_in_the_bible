@@ -16,4 +16,6 @@ nothing_in_book =
         *[other] None of these words are in { $book }
     }.
 
+percent_in_book = { $percent }% of these words are not in { $book }.
+
 and = and

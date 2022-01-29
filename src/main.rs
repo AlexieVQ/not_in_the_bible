@@ -13,7 +13,7 @@ use not_in_the_bible::{
     searcher,
     history::DBHistory,
     db_conf::DBConf,
-    log_expect::LogExpect,
+    log_expect::LogExpect, config::Configuration,
 };
 use rustop::opts;
 use yaml_rust::YamlLoader;
@@ -32,6 +32,7 @@ fn main() {
         .log_expect("Error reading config file");
     let yaml_config = YamlLoader::load_from_str(&str)
         .log_expect("Error parsing config file");
+    let bot_conf = Configuration::from_config(&yaml_config[0]);
     let db_conf = DBConf::from_config(&yaml_config[0]["db"]);
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));
@@ -40,7 +41,8 @@ fn main() {
     let mut request_queue = DBRequestQueue::new(&db_conf);
     let mut response_queue = DBResponseQueue::new(&db_conf);
     let t_dic = thread::spawn(move || {
-        searcher::run(&mut request_queue, &mut response_queue, &dics);
+        searcher::run(&mut request_queue, &mut response_queue, &dics,
+            &bot_conf);
     });
 
     let c1 = Clone::clone(&connection);

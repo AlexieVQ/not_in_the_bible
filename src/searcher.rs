@@ -6,10 +6,12 @@ use crate::{
     dictionary::{Dictionary, DictionarySet},
     response::Response,
     job_queue::JobQueue,
-    request::Request
+    request::Request,
+    config::Configuration,
 };
 
 const EN: LanguageIdentifier = langid!("en");
+const RATIO_MIN_WORDS_LEN: usize = 10;
 
 static_loader! {
     static LOCALES = {
@@ -20,8 +22,9 @@ static_loader! {
 
 /// A routine that wait for requests and send responses to them.
 pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
-       response_queue: &mut impl JobQueue<Response>,
-       dictionaries: &impl DictionarySet<T>) {
+                          response_queue: &mut impl JobQueue<Response>,
+                          dictionaries: &impl DictionarySet<T>,
+                          conf: &Configuration) {
     loop {
         let request = request_queue.take();
         let dictionary = match &request.lang {
@@ -35,12 +38,16 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
         };
         let words = request.words();
         let absent_words = dictionary.absent_words(&words);
+        let percent = ((absent_words.len() as f64 / words.len() as f64)
+            * 100.) as i64;
         let mut args = HashMap::new();
         args.insert("book", book.into());
         args.insert("wordsCount", FluentValue::Number(FluentNumber::from(
             words.len())));
         args.insert("absentWordsCount", FluentValue::Number(
             FluentNumber::from(absent_words.len())));
+        args.insert("percent",
+            FluentValue::Number(FluentNumber::from(percent)));
         args.insert("words", match absent_words.len() {
             0 => "".to_string(),
             1 => format!("“{}”", absent_words[0]),
@@ -55,6 +62,9 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
             LOCALES.lookup_with_args(&lang, "in_book", &args)
         } else if absent_words.len() == words.len() {
             LOCALES.lookup_with_args(&lang, "nothing_in_book", &args)
+        } else if percent >= conf.show_percent
+            && words.len() >= RATIO_MIN_WORDS_LEN {
+            LOCALES.lookup_with_args(&lang, "percent_in_book", &args)
         } else {
             LOCALES.lookup_with_args(&lang, "not_in_book", &args)
         };

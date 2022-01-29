@@ -20,3 +20,4 @@ pub mod history;
 pub mod twitter;
 pub mod db_conf;
 pub mod log_expect;
+pub mod config;
