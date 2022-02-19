@@ -91,4 +91,6 @@ For each source you need to specify:
 - `path`: the path to its content, an UTF-8 encoded plain text file,
 - `name`: the name of the book, that will appear in the responses the bot send,
 - `lang`: language tag for the book, corresponding to a language tag supported
-  by Twitter.
+  by Twitter,
+- `excluded` (optional): path to a file containing a list of words to ignore
+  (eg. function words).

@@ -1,4 +1,4 @@
-use std::{io::{Read, stdin}, fs::File};
+use std::{io::{Read, stdin, self}, fs::File};
 
 use not_in_the_bible::{in_memory_dictionary::InMemoryDictionary, tokenize::Tokenize, dictionary::Dictionary};
 use rustop::opts;
@@ -20,7 +20,7 @@ fn main() {
     };
 
     let dic = InMemoryDictionary::from_input(&mut text,
-        "".to_string(), "".to_string());
+        Box::new(io::empty()).as_mut(), "".to_string(), "".to_string());
 
     for string in args.words {
         let words = match args.length {

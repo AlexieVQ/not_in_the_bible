@@ -1,4 +1,9 @@
-use std::{collections::{HashSet, HashMap}, io::{Read, BufReader, BufRead, Write}, panic, fs::File};
+use std::{
+    collections::{HashSet, HashMap},
+    io::{Read, BufReader, BufRead, Write, self},
+    panic,
+    fs::File,
+};
 
 use unidecode::unidecode;
 use yaml_rust::Yaml;
@@ -12,6 +17,7 @@ use crate::{
 /// A Dictionary that stores its set of words in memory.
 pub struct InMemoryDictionary {
     words: HashSet<String>,
+    excluded: HashSet<String>,
     name: String,
     lang: String,
 }
@@ -27,26 +33,30 @@ impl InMemoryDictionary {
     fn new(name: String, lang: String) -> InMemoryDictionary {
         InMemoryDictionary {
             words: HashSet::new(),
+            excluded: HashSet::new(),
             name,
             lang,
         }
     }
 
     /// Creates a dictionary with words from given input.
-    pub fn from_input(input: &mut impl Read,
+    pub fn from_input(input: &mut dyn Read,
+                      excluded: &mut dyn Read,
                       name: String,
                       lang: String) -> InMemoryDictionary {
         let mut dic = Self::new(name, lang);
         for line in BufReader::new(input).lines() {
-            match line {
-                Ok(s) => {
-                    for word in s.tokenize() {
-                        dic.words.insert(unidecode(word).to_lowercase());
-                    }
-                },
-                Err(e) => {
-                    panic!("Error while loading input file: {}", e);
-                },
+            for word in line
+                .expect("Error while loading input file")
+                .tokenize() {
+                dic.words.insert(unidecode(word).to_lowercase());
+            }
+        }
+        for line in BufReader::new(excluded).lines() {
+            for word in line
+                .expect("Error while loading exclusion file")
+                .tokenize() {
+                dic.excluded.insert(unidecode(word).to_lowercase());
             }
         }
         dic
@@ -75,6 +85,12 @@ impl Dictionary for InMemoryDictionary {
             writeln!(out, "{}", word).expect("Error writing to output");
         }
     }
+
+    fn ignored(&self, word: &str) -> bool {
+        let word = unidecode(&word.to_lowercase());
+        self.excluded.contains(&word)
+    }
+
 }
 
 impl InMemoryDictionarySet {
@@ -91,6 +107,12 @@ impl InMemoryDictionarySet {
                     .as_str()
                     .log_expect("Missing or wrong source path"))
                     .log_expect("Error loading source"),
+                match dic_conf["excluded"].as_str() {
+                    Some(path) => Box::new(File::open(path)
+                        .expect("Error loading exclusion list"))
+                        as Box<dyn Read>,
+                    None => Box::new(io::empty()),
+                }.as_mut(),
                 dic_conf["name"]
                     .as_str()
                     .log_expect("Missing source name")

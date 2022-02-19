@@ -10,7 +10,9 @@ sources:
   - path: examples/bible_en.txt
     name: the Bible
     lang: en
+    excluded: examples/ignored_en.txt
   - path: examples/bible_fr.txt
     name: la Bible
     lang: fr
+    excluded: examples/ignored_fr.txt
 show_percent: 100

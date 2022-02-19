@@ -1,4 +1,4 @@
-use std::{io::{Read, stdin, stdout}, fs::File};
+use std::{io::{Read, stdin, stdout, self}, fs::File};
 
 use not_in_the_bible::{
     in_memory_dictionary::InMemoryDictionary,
@@ -18,8 +18,8 @@ fn main() {
         None => Box::new(stdin()),
     };
 
-    let dictionary = InMemoryDictionary::from_input(&mut input, 
-        "".to_string(), "".to_string());
+    let dictionary = InMemoryDictionary::from_input(&mut input,
+        Box::new(io::empty()).as_mut(), "".to_string(), "".to_string());
 
     dictionary.print(&mut stdout());
 }

@@ -43,8 +43,6 @@ pub struct Connection<'a> {
 #[derive(Deserialize)]
 struct RequestTokenResponse {
     pub oauth_token: String,
-    pub oauth_token_secret: String,
-    pub oauth_callback_confirmed: bool,
 }
 
 /// Response from access_token
@@ -52,8 +50,6 @@ struct RequestTokenResponse {
 struct AccessTokenResponse {
     pub oauth_token: String,
     pub oauth_token_secret: String,
-    pub user_id: String,
-    pub screen_name: String,
 }
 
 /// Response from verify_credentials

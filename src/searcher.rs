@@ -37,8 +37,9 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
             None => EN,
         };
         let words = request.words();
-        let absent_words = dictionary.absent_words(&words);
-        let percent = ((absent_words.len() as f64 / words.len() as f64)
+        let (absent_words, present) = dictionary.absent_words(&words);
+        let total = absent_words.len() + present;
+        let percent = ((absent_words.len() as f64 / total as f64)
             * 100.) as i64;
         let mut args = HashMap::new();
         args.insert("book", book.into());
@@ -60,10 +61,10 @@ pub fn run<T: Dictionary>(request_queue: &mut impl JobQueue<Request>,
         }.into());
         let message: String = if absent_words.is_empty() {
             LOCALES.lookup_with_args(&lang, "in_book", &args)
-        } else if absent_words.len() == words.len() {
+        } else if present == 0 {
             LOCALES.lookup_with_args(&lang, "nothing_in_book", &args)
         } else if percent >= conf.show_percent
-            && words.len() >= RATIO_MIN_WORDS_LEN {
+            && total >= RATIO_MIN_WORDS_LEN {
             LOCALES.lookup_with_args(&lang, "percent_in_book", &args)
         } else {
             LOCALES.lookup_with_args(&lang, "not_in_book", &args)
