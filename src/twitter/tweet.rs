@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 /// A Twitter status
@@ -14,6 +15,16 @@ pub struct Tweet {
     pub is_quote_status: bool,
     pub quoted_status: Option<Box<Tweet>>,
     pub lang: Option<String>,
+}
+
+impl Tweet {
+
+    /// Parses tweet's creation date.
+    pub fn parse_date(&self) -> NaiveDateTime {
+        NaiveDateTime::parse_from_str(&self.created_at,
+            "%a %b %d %T %z %Y").unwrap()
+    }
+
 }
 
 /// A Twitter user profile

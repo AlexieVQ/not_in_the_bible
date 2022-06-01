@@ -34,8 +34,7 @@ impl Request {
         Request {
             user: request.user.screen_name.to_string(),
             id: request.id_str.to_string(),
-            date: NaiveDateTime::parse_from_str(&request.created_at,
-                "%a %b %d %T %z %Y").unwrap(),
+            date: request.parse_date(),
             op_id: op.id_str.to_string(),
             op_author: op.user.screen_name.to_string(),
             text: RE.replace_all(match &op.full_text {

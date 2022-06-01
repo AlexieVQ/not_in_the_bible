@@ -1,5 +1,6 @@
 use std::{fs::File, io::Read, sync::Arc, thread};
 
+use chrono::{NaiveDateTime, NaiveDate};
 use not_in_the_bible::{
     twitter::{
         twitter_conf::TwitterConf,
@@ -21,10 +22,17 @@ use yaml_rust::YamlLoader;
 fn main() {
     let (args, _) = opts! {
         synopsis concat!("A program that searches for word that are absent in ",
-                "a text file.");
+            "a text file.");
         opt config: String, desc: "Config file name (.yaml).";
+        opt since: Option<String>, desc: concat!("Only handle statuses ",
+            "sent since given date (YYYY-MM-DD format).");
     }.parse_or_exit();
     env_logger::init();
+    let since: Option<NaiveDateTime> = args.since.map(|s| {
+        NaiveDate::parse_from_str(&s, "%F")
+            .log_expect(&format!("Invalid date format {}", s))
+            .and_hms(0, 0, 0)
+    });
     let mut str = String::new();
     File::open(args.config)
         .log_expect("Error opening config file")
@@ -48,7 +56,7 @@ fn main() {
     let c1 = Clone::clone(&connection);
     let mut request_queue = DBRequestQueue::new(&db_conf);
     let t_req = thread::spawn(move || {
-        listener::listen(&c1, &mut request_queue);
+        listener::listen(&c1, &mut request_queue, since);
     });
 
     let mut response_queue = DBResponseQueue::new(&db_conf);
