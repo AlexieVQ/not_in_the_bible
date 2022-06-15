@@ -32,14 +32,7 @@ account with the API key and secret you got:
 ./target/release/generate_twitter_conf -k <YOUR_API_KEY> -s <YOUR_API_SECRET>
 ```
 
-Copy [`config.yaml.example`](config.yaml.example) to create your configuration
-file:
-
-```bash
-cp config.yaml.example config.yaml
-```
-
-In this file:
+Edit [`example/config.yaml`](example/config.yaml) to create your configuration:
 
 - replace `username` and `password` in this line:
   ```yaml
@@ -73,10 +66,10 @@ of the YAML configuration file. By default it looks like that:
 
 ```yaml
 sources:
-  - path: examples/bible_en.txt
+  - path: bible_en.txt
     name: the Bible
     lang: en
-  - path: examples/bible_fr.txt
+  - path: bible_fr.txt
     name: la Bible
     lang: fr
 ```

@@ -7,12 +7,12 @@ twitter:
   updates_per_hour: 12
   refresh_interval: 60
 sources:
-  - path: examples/bible_en.txt
+  - path: bible_en.txt
     name: the Bible
     lang: en
-    excluded: examples/ignored_en.txt
-  - path: examples/bible_fr.txt
+    excluded: ignored_en.txt
+  - path: bible_fr.txt
     name: la Bible
     lang: fr
-    excluded: examples/ignored_fr.txt
+    excluded: ignored_fr.txt
 show_percent: 100
