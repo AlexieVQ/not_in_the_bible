@@ -119,15 +119,28 @@ impl InMemoryDictionarySet {
         for dic_conf in conf
             .as_vec()
             .log_expect("Missing or wrong \"sources\" array") {
-            let mut path = config_dir.clone();
-            path.push(dic_conf["path"]
-                .as_str()
-                .log_expect("Missing or wrong source path"));
+            let path = {
+                let dic_path = Path::new(dic_conf["path"]
+                    .as_str()
+                    .log_expect("Missing or wrong source path"));
+                if dic_path.is_relative() {
+                    let mut path = config_dir.clone();
+                    path.push(&dic_path);
+                    path
+                } else {
+                    dic_path.to_path_buf()
+                }
+            };
             let exclusion_path = dic_conf["excluded"]
                 .as_str().map(|p| {
-                    let mut path = config_dir.clone();
-                    path.push(p);
-                    path
+                    let path = Path::new(p);
+                    if path.is_relative() {
+                        let mut p2 = config_dir.clone();
+                        p2.push(path);
+                        p2
+                    } else {
+                        path.to_path_buf()
+                    }
                 });
             let dic = InMemoryDictionary::from_input(
                 &mut File::open(&path)
