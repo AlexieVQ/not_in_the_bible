@@ -3,7 +3,9 @@ use std::io::stdout;
 use diesel::PgConnection;
 use yaml_rust::Yaml;
 
-use crate::{embedded_migrations, log_expect::LogExpect};
+use crate::{embedded_migrations, log_expect::LogExpect, config::from_env};
+
+const DB_VAR: &str = "NITB_DB";
 
 /// Configuration for the database.
 pub struct DBConf {
@@ -19,10 +21,10 @@ impl DBConf {
 
     /// Creates a database from given YAML config.
     pub fn from_config(conf: &Yaml) -> DBConf {
-        DBConf::new(conf
+        DBConf::new(from_env(DB_VAR).unwrap_or_else(|| conf
             .as_str()
             .log_expect("Missing or malformed \"db\" url")
-            .to_string())
+            .to_string()))
     }
 
 }

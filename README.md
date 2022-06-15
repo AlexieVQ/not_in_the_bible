@@ -94,3 +94,26 @@ For each source you need to specify:
   by Twitter,
 - `excluded` (optional): path to a file containing a list of words to ignore
   (eg. function words).
+
+## Configuration using environment variables and files (Docker secrets)
+
+As an alternative to putting all the configuration information in the
+`config.yaml` file, environment variables and files can be used to store some of
+them, for example to put Twitter credentials in Docker secrets.
+
+Here is a list of all the `config.yaml` entries that can be replaced by
+environment variables or Docker secrets:
+
+| Configuration entry        | Environment variable        | Environment variable storing file's path |
+|----------------------------|---------------------------------|--------------------------------------|
+| `db`                       | `NITB_DB`                       | `NITB_DB_FILE`                       |
+| `twitter.api_key`          | `NITB_TWITTER_API_KEY`          | `NITB_TWITTER_API_KEY_FILE`          |
+| `twitter.api_secret`       | `NITB_TWITTER_API_SECRET`       | `NITB_TWITTER_API_SECRET_FILE`       |
+| `twitter.token`            | `NITB_TWITTER_TOKEN`            | `NITB_TWITTER_TOKEN_FILE`            |
+| `twitter.token_secret`     | `NITB_TWITTER_TOKEN_SECRET`     | `NITB_TWITTER_TOKEN_SECRET_FILE`     |
+| `twitter.updates_per_hour` | `NITB_TWITTER_UPDATES_PER_HOUR` | `NITB_TWITTER_UPDATES_PER_HOUR_FILE` |
+| `twitter.refresh_interval` | `NITB_TWITTER_REFRESH_INTERVAL` | `NITB_TWITTER_REFRESH_INTERVAL_FILE` |
+| `show_percent`             | `NITB_SHOW_PERCENT`             | `NITB_SHOW_PERCENT_FILE`             |
+
+Environment variables and Docker secrets override information specified in
+`config.yaml`.
