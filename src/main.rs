@@ -34,7 +34,7 @@ fn main() {
             .and_hms(0, 0, 0)
     });
     let mut str = String::new();
-    File::open(args.config)
+    File::open(&args.config)
         .log_expect("Error opening config file")
         .read_to_string(&mut str)
         .log_expect("Error reading config file");
@@ -44,7 +44,8 @@ fn main() {
     let db_conf = DBConf::from_config(&yaml_config[0]["db"]);
     let twitter_conf = TwitterConf::from_yaml(&yaml_config[0]["twitter"]);
     let connection = Arc::new(Connection::init(twitter_conf));
-    let dics = InMemoryDictionarySet::from_config(&yaml_config[0]["sources"]);
+    let dics = InMemoryDictionarySet::from_config(
+        &yaml_config[0]["sources"], &args.config);
 
     let mut request_queue = DBRequestQueue::new(&db_conf);
     let mut response_queue = DBResponseQueue::new(&db_conf);

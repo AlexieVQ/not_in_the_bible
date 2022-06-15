@@ -4,7 +4,7 @@ A Twitter bot that searches for words from a tweet that are not in a book (for
 e.g., the Bible).
 
 A Twitter user must mention the bot's account under the tweet they want to
-analyse. The bot only analyses the same tweet once.
+analyze. The bot only analyses the same tweet once.
 
 This bot is multilingual: you can specify a book by language supported by
 Twitter. For now messages are only localized in English and French.
@@ -83,12 +83,13 @@ sources:
 
 As you can see you can specify multiple books, one by language supported by
 Twitter. The bot will response by searching into the book corresponding to the
-language of the status to analyse, or will default to the first source in the
+language of the status to analyze, or will default to the first source in the
 list if no source are specified for this language.
 
 For each source you need to specify:
 
-- `path`: the path to its content, an UTF-8 encoded plain text file,
+- `path`: the path to its content (relative to the location of the configuration
+  file), an UTF-8 encoded plain text file,
 - `name`: the name of the book, that will appear in the responses the bot send,
 - `lang`: language tag for the book, corresponding to a language tag supported
   by Twitter,

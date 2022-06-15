@@ -1,8 +1,7 @@
 use std::{
     collections::{HashSet, HashMap},
     io::{Read, BufReader, BufRead, Write, self},
-    panic,
-    fs::File,
+    fs::File, path::{Path, PathBuf}, env,
 };
 
 use unidecode::unidecode;
@@ -96,18 +95,45 @@ impl Dictionary for InMemoryDictionary {
 impl InMemoryDictionarySet {
 
     /// Creates a set of dictionaries from given YAML config.
-    pub fn from_config(conf: &Yaml) -> InMemoryDictionarySet {
+    ///
+    /// `config_path` is the path of the YAML config. Dictionaries' paths are
+    /// given relatively to this path.
+    pub fn from_config<P: AsRef<Path>>(conf: &Yaml,
+                                       config_path: P) -> InMemoryDictionarySet
+    {
+        let config_dir = {
+            let mut buf;
+            if config_path.as_ref().is_absolute() {
+                buf = PathBuf::new();
+            } else {
+                buf = env::current_dir()
+                    .log_expect("Unable to read working directory");
+            }
+            if let Some(path) = config_path.as_ref().parent() {
+                buf.push(path);
+            }
+            buf
+        };
         let mut dics: HashMap<String, InMemoryDictionary> = HashMap::new();
         let mut default: Option<String> = None;
         for dic_conf in conf
             .as_vec()
             .log_expect("Missing or wrong \"sources\" array") {
+            let mut path = config_dir.clone();
+            path.push(dic_conf["path"]
+                .as_str()
+                .log_expect("Missing or wrong source path"));
+            let exclusion_path = dic_conf["excluded"]
+                .as_str().map(|p| {
+                    let mut path = config_dir.clone();
+                    path.push(p);
+                    path
+                });
             let dic = InMemoryDictionary::from_input(
-                &mut File::open(dic_conf["path"]
-                    .as_str()
-                    .log_expect("Missing or wrong source path"))
-                    .log_expect("Error loading source"),
-                match dic_conf["excluded"].as_str() {
+                &mut File::open(&path)
+                    .log_expect(&format!("Error loading source file {}",
+                        &path.to_str().unwrap_or("(unknown)"))),
+                match exclusion_path {
                     Some(path) => Box::new(File::open(path)
                         .expect("Error loading exclusion list"))
                         as Box<dyn Read>,
