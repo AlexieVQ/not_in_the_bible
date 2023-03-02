@@ -1,4 +1,4 @@
-FROM rust:1.61 AS build
+FROM rust:1.67 AS build
 WORKDIR /usr/src/not_in_the_bible
 COPY Cargo.toml Cargo.lock diesel.toml ./
 COPY ./src/ ./src/
